@@ -8,10 +8,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 Role = Literal["user", "assistant"]
 
 
-def _to_utc(value: datetime | None) -> datetime | None:
-    """SQLite 读回的时间不带时区，统一按 UTC 处理后再序列化。"""
+def _to_utc(value: datetime | str | None) -> datetime | None:
+    """SQLite 读回的时间不带时区，统一按 UTC 处理后再序列化。
+
+    同时接受 ISO 字符串：流式落库后的事件载荷是 JSON，再拼装成响应模型时会传回字符串。
+    """
     if value is None:
         return None
+    if isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
     return value.astimezone(timezone.utc)
