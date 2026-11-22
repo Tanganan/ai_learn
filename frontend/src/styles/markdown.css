@@ -1,0 +1,228 @@
+/* 回答区 Markdown 排版：以阅读为主，弱化装饰 */
+.md-body {
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: #2c333d;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+}
+
+.md-body > :first-child {
+  margin-top: 0;
+}
+
+.md-body > :last-child {
+  margin-bottom: 0;
+}
+
+.md-body p {
+  margin: 0 0 12px;
+}
+
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4 {
+  margin: 22px 0 10px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #141920;
+  letter-spacing: -0.01em;
+}
+
+.md-body h1 {
+  font-size: 18px;
+}
+
+.md-body h2 {
+  font-size: 16.5px;
+}
+
+.md-body h3 {
+  font-size: 15.5px;
+}
+
+.md-body h4 {
+  font-size: 14.5px;
+}
+
+.md-body strong {
+  font-weight: 600;
+  color: #101828;
+}
+
+.md-body em {
+  font-style: italic;
+}
+
+.md-body del {
+  color: #98a0ad;
+}
+
+.md-body a {
+  color: #2b6cf6;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(43, 108, 246, 0.25);
+  transition: border-color 0.15s ease;
+}
+
+.md-body a:hover {
+  border-bottom-color: #2b6cf6;
+}
+
+.md-body ul,
+.md-body ol {
+  margin: 0 0 12px;
+  padding-left: 1.35em;
+}
+
+.md-body li {
+  margin: 4px 0;
+}
+
+.md-body li > p {
+  margin: 0 0 6px;
+}
+
+.md-body ul ul,
+.md-body ol ol,
+.md-body ul ol,
+.md-body ol ul {
+  margin: 4px 0 2px;
+}
+
+.md-body blockquote {
+  margin: 14px 0;
+  padding: 10px 14px;
+  border-left: 3px solid #cfdcff;
+  border-radius: 0 8px 8px 0;
+  background: #f8f9fc;
+  color: #4d5665;
+}
+
+.md-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.md-body hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #eceef2;
+}
+
+.md-body table {
+  width: 100%;
+  margin: 14px 0;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow: hidden;
+  border: 1px solid #eceef2;
+  border-radius: 8px;
+}
+
+.md-body th,
+.md-body td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f2f5;
+  text-align: left;
+  vertical-align: top;
+}
+
+.md-body th {
+  background: #f8f9fb;
+  font-weight: 600;
+  color: #1b2129;
+  white-space: nowrap;
+}
+
+.md-body tr:last-child td {
+  border-bottom: none;
+}
+
+.md-body img {
+  max-width: 100%;
+  height: auto;
+  margin: 6px 0;
+  border-radius: 8px;
+}
+
+/* 行内代码 */
+.md-body code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f2f4f7;
+  color: #334155;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.88em;
+  word-break: break-word;
+}
+
+/* 代码块卡片 */
+.md-body .code-block {
+  margin: 14px 0;
+  overflow: hidden;
+  border: 1px solid #e8ebf0;
+  border-radius: 10px;
+  background: #fbfcfd;
+}
+
+.md-body .code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #edeff3;
+  background: #f7f8fa;
+}
+
+.md-body .code-lang {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9099a7;
+}
+
+.md-body .code-copy {
+  padding: 3px 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #6b7482;
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.md-body .code-copy:hover {
+  background: #eef1f5;
+  color: #2b6cf6;
+}
+
+.md-body .code-block pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.md-body .code-block pre code {
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+  color: #24292f;
+  word-break: normal;
+}
+
+.md-body .hljs {
+  background: transparent;
+}

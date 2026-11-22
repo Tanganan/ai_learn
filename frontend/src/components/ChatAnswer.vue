@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Loading } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { nextTick, ref, watch } from 'vue'
 
 import type { AnswerStatus, ChatMessage } from '@/types/chat'
 import { formatMessageTime } from '@/utils/format'
+import { renderMarkdown } from '@/utils/markdown'
 
 const props = defineProps<{
   messages: ChatMessage[]
@@ -23,6 +25,29 @@ function scrollToBottom() {
     return
   }
   el.scrollTop = el.scrollHeight
+}
+
+/** 代码块复制：内容取自渲染后的 code 节点，避免重复维护原文 */
+async function handleBodyClick(event: MouseEvent) {
+  const target = event.target
+  if (!(target instanceof HTMLElement)) {
+    return
+  }
+  const button = target.closest<HTMLElement>('[data-copy-code]')
+  if (!button) {
+    return
+  }
+  const block = button.closest('.code-block')
+  const code = block?.querySelector('code')?.textContent ?? ''
+  if (!code) {
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(code)
+    ElMessage.success({ message: '代码已复制', duration: 1500 })
+  } catch {
+    ElMessage.error('复制失败，请手动选中代码')
+  }
 }
 
 watch(
@@ -49,30 +74,27 @@ watch(
       <span class="head-hint">回答由后端调用模型生成</span>
     </header>
 
-    <div ref="bodyRef" class="answer-body">
+    <div ref="bodyRef" class="answer-body" @click="handleBodyClick">
       <div v-if="messages.length === 0 && status === 'idle'" class="answer-empty">
         <p class="empty-title">开始一个新问题</p>
         <p class="empty-text">在下方输入问题，回答会显示在这里；历史会话可以随时切回。</p>
       </div>
 
       <div class="thread">
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          :class="['bubble-row', message.role]"
-        >
-          <div class="bubble">
-            <p class="bubble-text">{{ message.content }}</p>
-            <span class="bubble-time">{{ formatMessageTime(message.created_at) }}</span>
-          </div>
-        </div>
+        <article v-for="message in messages" :key="message.id" :class="['msg', message.role]">
+          <div
+            v-if="message.role === 'assistant'"
+            class="msg-content md-body"
+            v-html="renderMarkdown(message.content)"
+          />
+          <p v-else class="msg-content plain">{{ message.content }}</p>
+          <time class="msg-time">{{ formatMessageTime(message.created_at) }}</time>
+        </article>
 
-        <div v-if="status === 'loading'" class="bubble-row assistant">
-          <div class="bubble loading-bubble">
-            <el-icon class="is-loading"><Loading /></el-icon>
-            <span>正在生成回答…</span>
-          </div>
-        </div>
+        <article v-if="status === 'loading'" class="msg assistant loading-msg">
+          <el-icon class="is-loading"><Loading /></el-icon>
+          <span>正在生成回答…</span>
+        </article>
       </div>
 
       <div v-if="status === 'error'" class="error-box">
@@ -135,13 +157,15 @@ watch(
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 20px;
-  background: linear-gradient(180deg, #fbfcfe 0%, #ffffff 60%);
+  padding: 24px 22px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #fbfcff 0%, #ffffff 55%),
+    #ffffff;
 }
 
 .answer-empty {
   max-width: 460px;
-  margin: 56px auto 0;
+  margin: 64px auto 0;
   text-align: center;
 }
 
@@ -161,35 +185,40 @@ watch(
 .thread {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-.bubble-row {
+.msg {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.bubble-row.user {
-  justify-content: flex-end;
+.msg.user {
+  align-self: flex-end;
+  width: fit-content;
+  max-width: min(660px, 78%);
+  padding: 11px 15px;
+  border: 1px solid #dbe6ff;
+  border-radius: 12px 12px 4px 12px;
+  background: #eff4ff;
 }
 
-.bubble-row.assistant {
-  justify-content: flex-start;
-}
-
-.bubble {
-  max-width: min(680px, 78%);
-  padding: 12px 14px;
+.msg.assistant {
+  align-self: stretch;
+  padding: 18px 20px;
+  border: 1px solid #edf0f4;
   border-radius: 12px;
-  border: 1px solid var(--line);
-  background: #f7f8fa;
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 6px 16px -12px rgba(16, 24, 40, 0.12);
 }
 
-.bubble-row.user .bubble {
-  border-color: #d6e2ff;
-  background: #eef3ff;
-}
-
-.bubble-text {
+.msg-content.plain {
   margin: 0;
   font-size: 14px;
   line-height: 1.75;
@@ -197,20 +226,23 @@ watch(
   word-break: break-word;
 }
 
-.bubble-time {
-  display: block;
-  margin-top: 6px;
+.msg-time {
   font-size: 11px;
-  color: var(--ink-soft);
-  text-align: right;
+  color: #9aa3b0;
+  font-variant-numeric: tabular-nums;
 }
 
-.loading-bubble {
-  display: flex;
+.msg.user .msg-time {
+  align-self: flex-end;
+}
+
+.loading-msg {
+  flex-direction: row;
   align-items: center;
   gap: 8px;
+  padding: 16px 20px;
+  color: #6b7482;
   font-size: 13px;
-  color: var(--ink-soft);
 }
 
 .error-box {
@@ -218,7 +250,9 @@ watch(
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  margin-top: 16px;
+  width: 100%;
+  max-width: 860px;
+  margin: 18px auto 0;
 }
 
 .error-box :deep(.el-alert) {
