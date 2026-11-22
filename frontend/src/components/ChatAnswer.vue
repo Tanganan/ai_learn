@@ -11,6 +11,7 @@ const props = defineProps<{
   messages: ChatMessage[]
   status: AnswerStatus
   errorMessage: string
+  streamText: string
 }>()
 
 const emit = defineEmits<{
@@ -51,7 +52,7 @@ async function handleBodyClick(event: MouseEvent) {
 }
 
 watch(
-  () => [props.messages.length, props.status] as const,
+  () => [props.messages.length, props.status, props.streamText.length] as const,
   () => {
     nextTick(scrollToBottom)
   },
@@ -66,10 +67,10 @@ watch(
           <el-icon class="title-icon"><ChatLineSquare /></el-icon>
           回答
         </h2>
-        <el-tag v-if="status === 'loading'" size="small" type="info" effect="light">
+        <el-tag v-if="status === 'streaming'" size="small" type="primary" effect="light">
           <span class="tag-inner">
             <el-icon class="is-loading"><Loading /></el-icon>
-            加载中
+            生成中
           </span>
         </el-tag>
         <el-tag v-else-if="status === 'error'" size="small" type="danger" effect="light">
@@ -108,9 +109,14 @@ watch(
           </time>
         </article>
 
-        <article v-if="status === 'loading'" class="msg assistant loading-msg">
-          <el-icon class="is-loading"><Loading /></el-icon>
-          <span>正在生成回答…</span>
+        <article v-if="status === 'streaming'" class="msg assistant streaming-msg">
+          <div v-if="streamText" class="msg-content md-body" v-html="renderMarkdown(streamText)" />
+          <div v-else class="thinking">
+            <span class="dot" />
+            <span class="dot" />
+            <span class="dot" />
+            <span class="thinking-text">正在思考…</span>
+          </div>
         </article>
       </div>
 
@@ -253,6 +259,13 @@ watch(
     0 6px 16px -12px rgba(16, 24, 40, 0.12);
 }
 
+.streaming-msg {
+  border-color: #dfe8ff;
+  box-shadow:
+    0 1px 2px rgba(43, 108, 246, 0.06),
+    0 8px 20px -14px rgba(43, 108, 246, 0.28);
+}
+
 .msg-content.plain {
   margin: 0;
   font-size: 15px;
@@ -285,6 +298,69 @@ watch(
   padding: 16px 20px;
   color: #6b7482;
   font-size: 14px;
+}
+
+/* 流式光标：挂在最后一段内容后面，不破坏 markdown 结构 */
+.streaming-msg .md-body > *:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: #2b6cf6;
+  animation: caret-blink 1.05s steps(2, start) infinite;
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #7a8290;
+  font-size: 14px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2b6cf6;
+  opacity: 0.35;
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+.dot:nth-of-type(2) {
+  animation-delay: 0.16s;
+}
+
+.dot:nth-of-type(3) {
+  animation-delay: 0.32s;
+}
+
+.thinking-text {
+  margin-left: 4px;
+}
+
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
 }
 
 .error-box {

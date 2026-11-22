@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ChatLineSquare, MagicStick } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import { chatApi } from '@/api/chat'
 import { ApiError } from '@/api/client'
@@ -18,6 +18,11 @@ const sending = ref(false)
 const status = ref<AnswerStatus>('idle')
 const errorMessage = ref('')
 const lastQuestion = ref('')
+const streamText = ref('')
+const generating = computed(() => status.value === 'streaming')
+
+/** 当前流式请求的取消器，用户点「停止生成」时使用 */
+let streamController: AbortController | null = null
 
 /** 防止快速切换会话时旧请求覆盖新会话 */
 let loadToken = 0
@@ -74,8 +79,9 @@ async function handleSubmit(question: string) {
   }
   lastQuestion.value = question
   sending.value = true
-  status.value = 'loading'
+  status.value = 'streaming'
   errorMessage.value = ''
+  streamText.value = ''
 
   // 先乐观展示用户问题，网络失败时也保留上下文
   const optimistic: ChatMessage = {
@@ -87,17 +93,50 @@ async function handleSubmit(question: string) {
   }
   messages.value = [...messages.value, optimistic]
 
+  const controller = new AbortController()
+  streamController = controller
+  let failed = false
+
   try {
-    const answer = await chatApi.ask(question, activeId.value)
-    activeId.value = answer.session_id
-    messages.value = [
-      ...messages.value.filter((item) => item.id !== optimistic.id),
-      { ...optimistic, session_id: answer.session_id },
-      answer.message,
-    ]
-    status.value = 'success'
+    await chatApi.streamAsk(
+      question,
+      activeId.value,
+      {
+        onMeta(meta) {
+          activeId.value = meta.session_id
+          optimistic.session_id = meta.session_id
+        },
+        onDelta(text) {
+          streamText.value += text
+        },
+        onDone(answer) {
+          messages.value = [
+            ...messages.value.filter((item) => item.id !== optimistic.id),
+            { ...optimistic, session_id: answer.session_id },
+            answer.message,
+          ]
+          streamText.value = ''
+          status.value = 'success'
+        },
+        onError(detail) {
+          failed = true
+          streamText.value = ''
+          status.value = 'error'
+          errorMessage.value = detail
+        },
+      },
+      controller.signal,
+    )
+
+    if (failed) {
+      return
+    }
     await loadSessions()
   } catch (error) {
+    if ((error as Error).name === 'AbortError') {
+      await finalizeAborted(optimistic)
+      return
+    }
     if (error instanceof ApiError && error.status === 404) {
       messages.value = messages.value.filter((item) => item.id !== optimistic.id)
       activeId.value = null
@@ -106,11 +145,45 @@ async function handleSubmit(question: string) {
       await loadSessions()
       return
     }
+    streamText.value = ''
     status.value = 'error'
     errorMessage.value = errorText(error, '回答生成失败，请稍后重试')
   } finally {
+    streamController = null
     sending.value = false
   }
+}
+
+/** 用户停止或连接中断：把已收到的内容留成一条本地消息，不让等待白费 */
+async function finalizeAborted(optimistic: ChatMessage) {
+  const partial = streamText.value.trim()
+  streamText.value = ''
+  if (partial) {
+    messages.value = [
+      ...messages.value,
+      {
+        id: -Date.now(),
+        session_id: activeId.value ?? 0,
+        role: 'assistant',
+        content: partial,
+        created_at: new Date().toISOString(),
+      },
+    ]
+    status.value = 'success'
+    ElMessage.info('已停止生成，已生成的内容已保留')
+  } else {
+    messages.value = messages.value.filter((item) => item.id !== optimistic.id)
+    status.value = 'idle'
+    ElMessage.info('已停止生成')
+  }
+  await loadSessions()
+}
+
+function stopStreaming() {
+  if (!streamController) {
+    return
+  }
+  streamController.abort()
 }
 
 function startNewSession() {
@@ -196,10 +269,11 @@ onMounted(async () => {
         :messages="messages"
         :status="status"
         :error-message="errorMessage"
+        :stream-text="streamText"
         @retry="handleRetry"
       />
 
-      <ChatInput :sending="sending" @submit="handleSubmit" />
+      <ChatInput :sending="sending" :streaming="generating" @submit="handleSubmit" @stop="stopStreaming" />
     </main>
   </div>
 </template>

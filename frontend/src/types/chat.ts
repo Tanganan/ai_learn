@@ -28,5 +28,11 @@ export interface ChatAnswer {
   created_at: string
 }
 
-/** 回答区域的状态：加载中 / 成功回答 / 模型不可用 */
-export type AnswerStatus = 'idle' | 'loading' | 'success' | 'error'
+/** 回答区域的状态：空闲 / 生成中（流式）/ 成功回答 / 模型不可用 */
+export type AnswerStatus = 'idle' | 'streaming' | 'success' | 'error'
+
+/** 流式响应的会话信息帧 */
+export interface ChatStreamMeta {
+  session_id: number
+  title: string
+}

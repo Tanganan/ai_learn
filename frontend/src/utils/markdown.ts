@@ -13,6 +13,7 @@ import typescript from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
 import yaml from 'highlight.js/lib/languages/yaml'
 import MarkdownIt from 'markdown-it'
+import markdownItKatex from '@vscode/markdown-it-katex'
 
 hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('shell', bash)
@@ -40,6 +41,9 @@ const md = new MarkdownIt({
   breaks: true, // 聊天场景下单个换行也生效
   typographer: true,
 })
+
+// 行内 $...$ 与块级 $$...$$ 数学公式；公式不合法时输出红字而不是抛错
+md.use(markdownItKatex, { throwOnError: false, errorColor: '#d64545' })
 
 const escapeHtml = md.utils.escapeHtml
 

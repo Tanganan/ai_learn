@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Lock, Promotion } from '@element-plus/icons-vue'
+import { CircleClose, Lock, Promotion } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 
@@ -8,13 +8,15 @@ import { EMPTY_INPUT_HINT } from '@/utils/format'
 const props = withDefaults(
   defineProps<{
     sending: boolean
+    streaming?: boolean
     placeholder?: string
   }>(),
-  { placeholder: '输入你的问题，Enter 发送，Shift + Enter 换行' },
+  { streaming: false, placeholder: '输入你的问题，Enter 发送，Shift + Enter 换行' },
 )
 
 const emit = defineEmits<{
   (e: 'submit', question: string): void
+  (e: 'stop'): void
 }>()
 
 const draft = ref('')
@@ -22,6 +24,7 @@ const maxLength = 4000
 
 function submit() {
   if (props.sending) {
+    ElMessage.info('上一个问题还在生成，先停止或等它写完')
     return
   }
   const question = draft.value.trim()
@@ -31,6 +34,13 @@ function submit() {
   }
   emit('submit', question)
   draft.value = ''
+}
+
+function stop() {
+  if (!props.streaming) {
+    return
+  }
+  emit('stop')
 }
 
 function handleKeydown(event: KeyboardEvent) {
@@ -56,7 +66,6 @@ function handleKeydown(event: KeyboardEvent) {
       :maxlength="maxLength"
       show-word-limit
       :placeholder="placeholder"
-      :disabled="sending"
       @keydown="handleKeydown"
     />
     <div class="input-foot">
@@ -65,13 +74,21 @@ function handleKeydown(event: KeyboardEvent) {
         <span>请求统一发往后端 /api，浏览器不接触模型与数据库</span>
       </span>
       <el-button
+        v-if="streaming"
+        class="send-btn stop-btn"
+        :icon="CircleClose"
+        @click="stop"
+      >
+        停止生成
+      </el-button>
+      <el-button
+        v-else
         class="send-btn"
         type="primary"
         :icon="Promotion"
-        :loading="sending"
         @click="submit"
       >
-        {{ sending ? '生成中' : '发送' }}
+        发送
       </el-button>
     </div>
   </section>
@@ -133,5 +150,18 @@ function handleKeydown(event: KeyboardEvent) {
   font-weight: 500;
   letter-spacing: 0.02em;
   box-shadow: 0 4px 10px -4px rgba(43, 108, 246, 0.45);
+}
+
+.stop-btn {
+  border-color: #e3e6ec;
+  background: #ffffff;
+  color: #3b4352;
+  box-shadow: none;
+}
+
+.stop-btn:hover {
+  border-color: #2b6cf6;
+  color: #2b6cf6;
+  background: #f6f9ff;
 }
 </style>

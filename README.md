@@ -86,6 +86,7 @@ npm run build
 | GET | `/api/sessions/{id}` | 会话详情与全部消息 |
 | DELETE | `/api/sessions/{id}` | 删除会话及其消息 |
 | POST | `/api/chat` | 提交问题，返回会话 id、标题与回答 |
+| POST | `/api/chat/stream` | 同上，但按 SSE 逐字返回（前端默认用这个） |
 | GET | `/api/health` | 健康检查 |
 
 `POST /api/chat` 请求体：
@@ -95,3 +96,14 @@ npm run build
 ```
 
 `session_id` 为空会新建会话，标题取问题前 20 个字。模型不可用时返回 `503`，且不会写入半条消息。
+
+`/api/chat/stream` 同样接收这份请求体，返回 `text/event-stream`，四种事件：
+
+| 事件 | data | 说明 |
+| --- | --- | --- |
+| `meta` | `{ session_id, title }` | 会话确定后的首帧 |
+| `delta` | `{ text }` | 增量文本，逐字追加到气泡 |
+| `done` | `{ session_id, title, answer, message }` | 回答完整落库，`message` 与消息详情结构一致 |
+| `error` | `{ detail }` | 模型不可用，`detail` 可直接展示 |
+
+前端点「停止生成」会中断连接：后端把已生成的部分回答落库，不留下空消息；若一个字都没产出，新建的空会话会被清理。

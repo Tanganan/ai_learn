@@ -226,3 +226,21 @@
 .md-body .hljs {
   background: transparent;
 }
+
+/* 数学公式：行内跟随文字，块级居中且可横向滚动 */
+.md-body .katex {
+  font-size: 1.04em;
+} 
+
+.md-body .katex-display {
+  margin: 16px 0;
+  padding: 4px 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.md-body .katex-error {
+  color: #d64545;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+}
