@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChatLineSquare, MagicStick } from '@element-plus/icons-vue'
+import { ChatLineSquare, EditPen, MagicStick } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 
@@ -7,6 +7,7 @@ import { chatApi } from '@/api/chat'
 import { ApiError } from '@/api/client'
 import ChatAnswer from '@/components/ChatAnswer.vue'
 import ChatInput from '@/components/ChatInput.vue'
+import PromptPanel from '@/components/PromptPanel.vue'
 import SessionList from '@/components/SessionList.vue'
 import type { AnswerStatus, ChatMessage, ChatSession } from '@/types/chat'
 
@@ -20,6 +21,17 @@ const errorMessage = ref('')
 const lastQuestion = ref('')
 const streamText = ref('')
 const generating = computed(() => status.value === 'streaming')
+
+/** 主区当前显示的内容：问答区 / 提示词编辑 */
+const viewMode = ref<'chat' | 'prompt'>('chat')
+
+function switchView(mode: 'chat' | 'prompt') {
+  if (mode === 'prompt' && sending.value) {
+    ElMessage.info('回答生成中，稍等片刻再改提示词')
+    return
+  }
+  viewMode.value = mode
+}
 
 /** 当前流式请求的取消器，用户点「停止生成」时使用 */
 let streamController: AbortController | null = null
@@ -52,6 +64,7 @@ async function openSession(id: number) {
   status.value = 'idle'
   errorMessage.value = ''
   messages.value = []
+  viewMode.value = 'chat'
 
   try {
     const detail = await chatApi.getSession(id)
@@ -197,6 +210,7 @@ function startNewSession() {
   status.value = 'idle'
   errorMessage.value = ''
   lastQuestion.value = ''
+  viewMode.value = 'chat'
 }
 
 async function handleRemove(id: number) {
@@ -240,9 +254,11 @@ onMounted(async () => {
       :sessions="sessions"
       :active-id="activeId"
       :loading="sessionsLoading"
+      :mode="viewMode"
       @select="openSession"
       @create="startNewSession"
       @remove="handleRemove"
+      @switch-mode="switchView"
     />
 
     <main class="main-column">
@@ -256,15 +272,27 @@ onMounted(async () => {
             <p>Vue 3 + TypeScript + Element Plus · FastAPI + SQLAlchemy</p>
           </div>
         </div>
-        <el-tag size="small" effect="plain" round class="session-badge">
-          <span class="badge-inner">
-            <el-icon><ChatLineSquare /></el-icon>
-            {{ activeId ? `会话 #${activeId}` : '新会话' }}
-          </span>
-        </el-tag>
+        <div class="head-actions">
+          <el-tag size="small" effect="plain" round class="session-badge">
+            <span class="badge-inner">
+              <el-icon><ChatLineSquare /></el-icon>
+              {{ activeId ? `会话 #${activeId}` : '新会话' }}
+            </span>
+          </el-tag>
+          <el-button
+            size="small"
+            plain
+            class="prompt-entry"
+            :icon="viewMode === 'chat' ? EditPen : ChatLineSquare"
+            @click="switchView(viewMode === 'chat' ? 'prompt' : 'chat')"
+          >
+            {{ viewMode === 'chat' ? '提示词' : '返回对话' }}
+          </el-button>
+        </div>
       </header>
 
       <ChatAnswer
+        v-if="viewMode === 'chat'"
         class="answer-slot"
         :messages="messages"
         :status="status"
@@ -273,7 +301,15 @@ onMounted(async () => {
         @retry="handleRetry"
       />
 
-      <ChatInput :sending="sending" :streaming="generating" @submit="handleSubmit" @stop="stopStreaming" />
+      <PromptPanel v-else />
+
+      <ChatInput
+        v-if="viewMode === 'chat'"
+        :sending="sending"
+        :streaming="generating"
+        @submit="handleSubmit"
+        @stop="stopStreaming"
+      />
     </main>
   </div>
 </template>
@@ -338,6 +374,12 @@ onMounted(async () => {
   color: var(--ink-soft);
 }
 
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .session-badge {
   border-radius: 999px;
   background: #ffffff;
@@ -348,6 +390,13 @@ onMounted(async () => {
   align-items: center;
   gap: 4px;
   font-size: 12px;
+}
+
+.prompt-entry {
+  border-radius: 999px;
+  font-size: 12.5px;
+  padding: 0 13px;
+  height: 28px;
 }
 
 .answer-slot {

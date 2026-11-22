@@ -22,6 +22,7 @@ from ..config import get_settings
 from ..database import SessionLocal, get_db
 from ..llm import ModelUnavailableError, generate_answer, stream_answer
 from ..models import ChatSession, Message, utc_now
+from ..prompts import get_system_prompt
 from ..schemas import ChatRequest, ChatResponse, MessageOut
 
 router = APIRouter(tags=["chat"])
@@ -118,9 +119,10 @@ def _resolve_session(db: Session, payload: ChatRequest) -> tuple[ChatSession, bo
 async def chat(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
     session, _created = _resolve_session(db, payload)
     history = _load_history(db, session.id)
+    system_prompt = get_system_prompt(db)
 
     try:
-        answer = await generate_answer(history, payload.question)
+        answer = await generate_answer(history, payload.question, system_prompt)
     except ModelUnavailableError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -145,6 +147,7 @@ async def chat(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatRespo
 async def chat_stream(payload: ChatRequest, db: Session = Depends(get_db)) -> StreamingResponse:
     session, created_new = _resolve_session(db, payload)
     history = _load_history(db, session.id)
+    system_prompt = get_system_prompt(db)
     session_id = session.id
     title = session.title
 
@@ -154,7 +157,7 @@ async def chat_stream(payload: ChatRequest, db: Session = Depends(get_db)) -> St
         try:
             yield _sse("meta", {"session_id": session_id, "title": title})
 
-            async for piece in stream_answer(history, payload.question):
+            async for piece in stream_answer(history, payload.question, system_prompt):
                 chunks.append(piece)
                 yield _sse("delta", {"text": piece})
 

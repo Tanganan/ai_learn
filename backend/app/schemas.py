@@ -73,3 +73,29 @@ class ChatResponse(BaseModel):
     @classmethod
     def _ensure_timezone(cls, value: datetime) -> datetime:
         return _to_utc(value)  # type: ignore[return-value]
+
+
+class PromptOut(BaseModel):
+    """当前生效的系统提示词 + 默认值，方便前端展示与恢复默认。"""
+
+    prompt: str
+    default_prompt: str
+    is_default: bool
+    updated_at: datetime | None = None
+
+    @field_validator("updated_at", mode="before")
+    @classmethod
+    def _ensure_timezone(cls, value: datetime | None) -> datetime | None:
+        return _to_utc(value)
+
+
+class PromptUpdate(BaseModel):
+    prompt: str = Field(min_length=1, max_length=2000, description="系统提示词")
+
+    @field_validator("prompt")
+    @classmethod
+    def _strip_prompt(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("提示词不能为空")
+        return stripped

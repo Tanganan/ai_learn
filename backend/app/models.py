@@ -1,4 +1,4 @@
-"""ORM 模型：会话（Session）与消息（Message）。"""
+"""ORM 模型：会话（Session）、消息（Message）与应用配置（Setting）。"""
 
 from datetime import datetime, timezone
 
@@ -47,3 +47,15 @@ class Message(Base):
     )
 
     session: Mapped[ChatSession] = relationship(back_populates="messages")
+
+
+class AppSetting(Base):
+    """键值型应用配置，目前只用来存系统提示词。"""
+
+    __tablename__ = "app_settings"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=utc_now, onupdate=utc_now
+    )

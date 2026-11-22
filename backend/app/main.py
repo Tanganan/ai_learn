@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .database import Base, engine
-from .routers import chat, sessions
+from .routers import chat, prompt, sessions
 
 settings = get_settings()
 
@@ -36,6 +36,7 @@ app.add_middleware(
 
 app.include_router(sessions.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
+app.include_router(prompt.router, prefix="/api")
 
 
 @app.get("/api/health", tags=["system"], summary="健康检查")

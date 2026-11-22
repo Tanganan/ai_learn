@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChatDotRound, ChatRound, Clock, Delete, Plus } from '@element-plus/icons-vue'
+import { ChatDotRound, ChatRound, Clock, Delete, EditPen, Plus } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 
 import type { ChatSession } from '@/types/chat'
@@ -9,12 +9,14 @@ const props = defineProps<{
   sessions: ChatSession[]
   activeId: number | null
   loading: boolean
+  mode: 'chat' | 'prompt'
 }>()
 
 const emit = defineEmits<{
   (e: 'select', id: number): void
   (e: 'create'): void
   (e: 'remove', id: number): void
+  (e: 'switch-mode', mode: 'chat' | 'prompt'): void
 }>()
 
 async function handleRemove(id: number) {
@@ -40,12 +42,27 @@ function handleSelect(id: number) {
 <template>
   <aside class="session-panel">
     <header class="panel-head">
-      <div>
-        <h2>
-          <el-icon class="title-icon"><ChatDotRound /></el-icon>
-          会话
-        </h2>
-        <p>按最近更新排序</p>
+      <div class="mode-switch" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="mode === 'chat'"
+          :class="['mode-btn', { active: mode === 'chat' }]"
+          @click="emit('switch-mode', 'chat')"
+        >
+          <el-icon><ChatDotRound /></el-icon>
+          <span>会话</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="mode === 'prompt'"
+          :class="['mode-btn', { active: mode === 'prompt' }]"
+          @click="emit('switch-mode', 'prompt')"
+        >
+          <el-icon><EditPen /></el-icon>
+          <span>提示词</span>
+        </button>
       </div>
       <el-button
         circle
@@ -107,31 +124,53 @@ function handleSelect(id: number) {
 
 .panel-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 16px 16px 12px;
+  gap: 8px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--line);
 }
 
-.panel-head h2 {
+.mode-switch {
   display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #f2f4f7;
+}
+
+.mode-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.title-icon {
-  font-size: 16px;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
   color: #5b6472;
+  font-size: 13.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.panel-head p {
-  margin: 5px 0 0;
-  font-size: 12.5px;
-  color: var(--ink-soft);
+.mode-btn .el-icon {
+  font-size: 15px;
+}
+
+.mode-btn:hover {
+  color: #2b6cf6;
+}
+
+.mode-btn.active {
+  background: #ffffff;
+  color: #2b6cf6;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
 }
 
 .panel-body {

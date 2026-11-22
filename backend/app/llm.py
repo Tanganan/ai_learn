@@ -23,8 +23,12 @@ class ModelUnavailableError(Exception):
     """模型服务不可用（未配置密钥、网络异常、限流或上游报错）。"""
 
 
-def _build_messages(history: list[dict[str, str]], question: str) -> list[dict[str, str]]:
-    messages: list[dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+def _build_messages(
+    history: list[dict[str, str]], question: str, system_prompt: str | None
+) -> list[dict[str, str]]:
+    """系统提示词由调用方传入（用户可改），缺省时用内置兜底。"""
+    prompt = (system_prompt or "").strip() or SYSTEM_PROMPT
+    messages: list[dict[str, str]] = [{"role": "system", "content": prompt}]
     messages.extend(history)
     messages.append({"role": "user", "content": question})
     return messages
@@ -68,7 +72,9 @@ def _demo_answer(question: str) -> str:
     )
 
 
-async def generate_answer(history: list[dict[str, str]], question: str) -> str:
+async def generate_answer(
+    history: list[dict[str, str]], question: str, system_prompt: str | None = None
+) -> str:
     settings = get_settings()
 
     if settings.mock_llm:
@@ -77,7 +83,7 @@ async def generate_answer(history: list[dict[str, str]], question: str) -> str:
     _check_settings()
     payload = {
         "model": settings.mimo_model,
-        "messages": _build_messages(history, question),
+        "messages": _build_messages(history, question, system_prompt),
         "temperature": 0.4,
         "stream": False,
     }
@@ -107,7 +113,7 @@ async def generate_answer(history: list[dict[str, str]], question: str) -> str:
 
 
 async def stream_answer(
-    history: list[dict[str, str]], question: str
+    history: list[dict[str, str]], question: str, system_prompt: str | None = None
 ) -> AsyncIterator[str]:
     """按片段产出回答文本；上游 SSE 解析失败时跳过该行，不中断整条流。"""
     settings = get_settings()
@@ -123,7 +129,7 @@ async def stream_answer(
     _check_settings()
     payload = {
         "model": settings.mimo_model,
-        "messages": _build_messages(history, question),
+        "messages": _build_messages(history, question, system_prompt),
         "temperature": 0.4,
         "stream": True,
     }

@@ -36,3 +36,11 @@ export interface ChatStreamMeta {
   session_id: number
   title: string
 }
+
+/** 系统提示词：当前生效值 + 默认值 */
+export interface SystemPrompt {
+  prompt: string
+  default_prompt: string
+  is_default: boolean
+  updated_at: string | null
+}
