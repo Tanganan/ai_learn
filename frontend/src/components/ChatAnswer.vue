@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Loading } from '@element-plus/icons-vue'
+import { ChatLineSquare, CircleCheck, Clock, Loading, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { nextTick, ref, watch } from 'vue'
 
@@ -62,13 +62,27 @@ watch(
   <section class="answer-panel">
     <header class="answer-head">
       <div class="head-title">
-        <h2>回答</h2>
-        <el-tag v-if="status === 'loading'" size="small" type="info" effect="light">加载中</el-tag>
+        <h2>
+          <el-icon class="title-icon"><ChatLineSquare /></el-icon>
+          回答
+        </h2>
+        <el-tag v-if="status === 'loading'" size="small" type="info" effect="light">
+          <span class="tag-inner">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            加载中
+          </span>
+        </el-tag>
         <el-tag v-else-if="status === 'error'" size="small" type="danger" effect="light">
-          模型不可用
+          <span class="tag-inner">
+            <el-icon><WarningFilled /></el-icon>
+            模型不可用
+          </span>
         </el-tag>
         <el-tag v-else-if="status === 'success'" size="small" type="success" effect="light">
-          已返回
+          <span class="tag-inner">
+            <el-icon><CircleCheck /></el-icon>
+            已返回
+          </span>
         </el-tag>
       </div>
       <span class="head-hint">回答由后端调用模型生成</span>
@@ -88,7 +102,10 @@ watch(
             v-html="renderMarkdown(message.content)"
           />
           <p v-else class="msg-content plain">{{ message.content }}</p>
-          <time class="msg-time">{{ formatMessageTime(message.created_at) }}</time>
+          <time class="msg-time">
+            <el-icon><Clock /></el-icon>
+            {{ formatMessageTime(message.created_at) }}
+          </time>
         </article>
 
         <article v-if="status === 'loading'" class="msg assistant loading-msg">
@@ -143,9 +160,27 @@ watch(
 }
 
 .head-title h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
   font-size: 15px;
   font-weight: 600;
+}
+
+.title-icon {
+  font-size: 15px;
+  color: #5b6472;
+}
+
+.tag-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-inner .el-icon {
+  font-size: 12px;
 }
 
 .head-hint {
@@ -157,7 +192,7 @@ watch(
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 24px 22px;
+  padding: 26px 24px;
   background:
     radial-gradient(120% 90% at 50% 0%, #fbfcff 0%, #ffffff 55%),
     #ffffff;
@@ -185,7 +220,7 @@ watch(
 .thread {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
@@ -209,9 +244,9 @@ watch(
 
 .msg.assistant {
   align-self: stretch;
-  padding: 18px 20px;
+  padding: 18px 22px;
   border: 1px solid #edf0f4;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #ffffff;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.04),
@@ -220,16 +255,23 @@ watch(
 
 .msg-content.plain {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 14.5px;
+  line-height: 1.8;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .msg-time {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11.5px;
   color: #9aa3b0;
   font-variant-numeric: tabular-nums;
+}
+
+.msg-time .el-icon {
+  font-size: 11.5px;
 }
 
 .msg.user .msg-time {
@@ -257,5 +299,21 @@ watch(
 
 .error-box :deep(.el-alert) {
   width: 100%;
+}
+
+/* 窄屏收紧留白，避免正文被挤成细长条 */
+@media (max-width: 600px) {
+  .answer-body {
+    padding: 18px 14px;
+  }
+
+  .msg.assistant {
+    padding: 15px 16px;
+    border-radius: 12px;
+  }
+
+  .msg.user {
+    max-width: 88%;
+  }
 }
 </style>

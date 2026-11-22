@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Delete, Plus } from '@element-plus/icons-vue'
+import { ChatDotRound, ChatRound, Clock, Delete, Plus } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 
 import type { ChatSession } from '@/types/chat'
@@ -41,7 +41,10 @@ function handleSelect(id: number) {
   <aside class="session-panel">
     <header class="panel-head">
       <div>
-        <h2>会话</h2>
+        <h2>
+          <el-icon class="title-icon"><ChatDotRound /></el-icon>
+          会话
+        </h2>
         <p>按最近更新排序</p>
       </div>
       <el-button
@@ -69,7 +72,11 @@ function handleSelect(id: number) {
           <div class="item-main">
             <span class="item-title" :title="item.title">{{ item.title }}</span>
             <span class="item-meta">
-              {{ formatSessionTime(item.updated_at) }} · {{ item.message_count }} 条消息
+              <el-icon><Clock /></el-icon>
+              <span>{{ formatSessionTime(item.updated_at) }}</span>
+              <span class="meta-dot">·</span>
+              <el-icon><ChatRound /></el-icon>
+              <span>{{ item.message_count }} 条</span>
             </span>
           </div>
           <el-button
@@ -108,13 +115,21 @@ function handleSelect(id: number) {
 }
 
 .panel-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
   font-size: 15px;
   font-weight: 600;
 }
 
+.title-icon {
+  font-size: 15px;
+  color: #5b6472;
+}
+
 .panel-head p {
-  margin: 4px 0 0;
+  margin: 5px 0 0;
   font-size: 12px;
   color: var(--ink-soft);
 }
@@ -147,7 +162,7 @@ function handleSelect(id: number) {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 10px;
+  padding: 11px 10px;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -174,16 +189,30 @@ function handleSelect(id: number) {
 }
 
 .item-title {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
+  line-height: 1.4;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .item-meta {
-  font-size: 11px;
-  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #9099a7;
+}
+
+.item-meta .el-icon {
+  font-size: 12px;
+  color: #b3bac5;
+}
+
+.meta-dot {
+  margin: 0 1px;
+  color: #c3c9d2;
 }
 
 .item-delete {

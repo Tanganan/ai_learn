@@ -1,9 +1,9 @@
 /* 回答区 Markdown 排版：以阅读为主，弱化装饰 */
 .md-body {
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.85;
   color: #2c333d;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.012em;
   word-break: break-word;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .md-body p {
-  margin: 0 0 12px;
+  margin: 0 0 13px;
 }
 
 .md-body h1,
@@ -31,11 +31,11 @@
 }
 
 .md-body h1 {
-  font-size: 18px;
+  font-size: 19px;
 }
 
 .md-body h2 {
-  font-size: 16.5px;
+  font-size: 17px;
 }
 
 .md-body h3 {
@@ -43,7 +43,7 @@
 }
 
 .md-body h4 {
-  font-size: 14.5px;
+  font-size: 15px;
 }
 
 .md-body strong {

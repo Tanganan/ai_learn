@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChatLineSquare, MagicStick } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 
@@ -174,14 +175,19 @@ onMounted(async () => {
     <main class="main-column">
       <header class="page-head">
         <div class="brand">
-          <span class="brand-mark">AI</span>
+          <span class="brand-mark">
+            <el-icon><MagicStick /></el-icon>
+          </span>
           <div>
             <h1>AI Learn 问答</h1>
             <p>Vue 3 + TypeScript + Element Plus · FastAPI + SQLAlchemy</p>
           </div>
         </div>
-        <el-tag size="small" effect="plain" round>
-          {{ activeId ? `会话 #${activeId}` : '新会话' }}
+        <el-tag size="small" effect="plain" round class="session-badge">
+          <span class="badge-inner">
+            <el-icon><ChatLineSquare /></el-icon>
+            {{ activeId ? `会话 #${activeId}` : '新会话' }}
+          </span>
         </el-tag>
       </header>
 
@@ -210,7 +216,7 @@ onMounted(async () => {
 .main-column {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-height: 0;
   overflow: hidden;
 }
@@ -226,33 +232,46 @@ onMounted(async () => {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
 }
 
 .brand-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: #2b6cf6;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4d8dff 0%, #2b6cf6 55%, #1d4ed8 100%);
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 18px;
+  box-shadow: 0 5px 12px -5px rgba(43, 108, 246, 0.5);
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .brand p {
   margin: 3px 0 0;
-  font-size: 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
   color: var(--ink-soft);
+}
+
+.session-badge {
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.session-badge .badge-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
 }
 
 .answer-slot {

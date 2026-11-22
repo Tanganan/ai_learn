@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Promotion } from '@element-plus/icons-vue'
+import { Lock, Promotion } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 
@@ -60,8 +60,17 @@ function handleKeydown(event: KeyboardEvent) {
       @keydown="handleKeydown"
     />
     <div class="input-foot">
-      <span class="foot-hint">请求统一发往后端 /api，浏览器不接触模型与数据库</span>
-      <el-button type="primary" :icon="Promotion" :loading="sending" @click="submit">
+      <span class="foot-hint">
+        <el-icon><Lock /></el-icon>
+        <span>请求统一发往后端 /api，浏览器不接触模型与数据库</span>
+      </span>
+      <el-button
+        class="send-btn"
+        type="primary"
+        :icon="Promotion"
+        :loading="sending"
+        @click="submit"
+      >
         {{ sending ? '生成中' : '发送' }}
       </el-button>
     </div>
@@ -74,7 +83,7 @@ function handleKeydown(event: KeyboardEvent) {
   flex-shrink: 0;
   flex-direction: column;
   gap: 10px;
-  padding: 14px 16px 16px;
+  padding: 13px 16px 15px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel-bg);
@@ -84,8 +93,8 @@ function handleKeydown(event: KeyboardEvent) {
   border-radius: 10px;
   box-shadow: none;
   background: #f7f8fa;
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 14.5px;
+  line-height: 1.75;
   padding: 12px 14px;
 }
 
@@ -102,7 +111,25 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .foot-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #9099a7;
+}
+
+.foot-hint .el-icon {
   font-size: 12px;
-  color: var(--ink-soft);
+}
+
+.send-btn {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 10px -4px rgba(43, 108, 246, 0.45);
 }
 </style>

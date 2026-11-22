@@ -29,6 +29,38 @@ body {
 body {
   background: var(--app-bg);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(43, 108, 246, 0.16);
+}
+
+/* 细滚动条，避免默认样式打断整体观感 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #dfe3ea transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #dfe3ea;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #c9d0da;
+  background-clip: content-box;
 }
 
 .app-shell {
