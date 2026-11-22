@@ -1,0 +1,38 @@
+:root {
+  --app-bg: #f5f6f8;
+  --panel-bg: #ffffff;
+  --ink: #1f2329;
+  --ink-soft: #6b7280;
+  --line: #e6e8eb;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+  color: var(--ink);
+  background: var(--app-bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+body {
+  background: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  height: 100%;
+  padding: 20px;
+  overflow: hidden;
+}
