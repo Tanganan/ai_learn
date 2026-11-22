@@ -1,9 +1,9 @@
 /* 回答区 Markdown 排版：以阅读为主，弱化装饰 */
 .md-body {
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 16px;
+  line-height: 1.75;
   color: #2c333d;
-  letter-spacing: 0.012em;
+  letter-spacing: 0.01em;
   word-break: break-word;
 }
 
@@ -16,14 +16,14 @@
 }
 
 .md-body p {
-  margin: 0 0 13px;
+  margin: 0 0 14px;
 }
 
 .md-body h1,
 .md-body h2,
 .md-body h3,
 .md-body h4 {
-  margin: 22px 0 10px;
+  margin: 24px 0 12px;
   font-weight: 600;
   line-height: 1.45;
   color: #141920;
@@ -31,19 +31,19 @@
 }
 
 .md-body h1 {
-  font-size: 19px;
+  font-size: 20px;
 }
 
 .md-body h2 {
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .md-body h3 {
-  font-size: 15.5px;
+  font-size: 16.5px;
 }
 
 .md-body h4 {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .md-body strong {
@@ -77,7 +77,7 @@
 }
 
 .md-body li {
-  margin: 4px 0;
+  margin: 5px 0;
 }
 
 .md-body li > p {
@@ -112,9 +112,9 @@
 
 .md-body table {
   width: 100%;
-  margin: 14px 0;
+  margin: 16px 0;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: 14.5px;
   line-height: 1.65;
   overflow: hidden;
   border: 1px solid #eceef2;
@@ -210,7 +210,7 @@
   overflow-x: auto;
   background: transparent;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-  font-size: 13px;
+  font-size: 13.5px;
   line-height: 1.7;
   tab-size: 2;
 }

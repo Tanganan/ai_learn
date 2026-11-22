@@ -83,7 +83,7 @@ function handleKeydown(event: KeyboardEvent) {
   flex-shrink: 0;
   flex-direction: column;
   gap: 10px;
-  padding: 13px 16px 15px;
+  padding: 14px 18px 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel-bg);
@@ -93,14 +93,16 @@ function handleKeydown(event: KeyboardEvent) {
   border-radius: 10px;
   box-shadow: none;
   background: #f7f8fa;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.75;
-  padding: 12px 14px;
+  padding: 13px 15px;
 }
 
 .input-panel :deep(.el-textarea__inner:focus) {
   background: #ffffff;
-  box-shadow: 0 0 0 1px #2b6cf6 inset;
+  box-shadow:
+    0 0 0 1px #2b6cf6 inset,
+    0 0 0 3px rgba(43, 108, 246, 0.1);
 }
 
 .input-foot {
@@ -114,20 +116,20 @@ function handleKeydown(event: KeyboardEvent) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11.5px;
+  font-size: 12px;
   line-height: 1.5;
   color: #9099a7;
 }
 
 .foot-hint .el-icon {
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
 .send-btn {
-  height: 38px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 22px;
   border-radius: 9px;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.02em;
   box-shadow: 0 4px 10px -4px rgba(43, 108, 246, 0.45);

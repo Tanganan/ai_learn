@@ -119,18 +119,18 @@ function handleSelect(id: number) {
   align-items: center;
   gap: 6px;
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .title-icon {
-  font-size: 15px;
+  font-size: 16px;
   color: #5b6472;
 }
 
 .panel-head p {
   margin: 5px 0 0;
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-soft);
 }
 
@@ -162,10 +162,12 @@ function handleSelect(id: number) {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 10px;
+  padding: 12px 12px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .session-item:hover {
@@ -174,6 +176,7 @@ function handleSelect(id: number) {
 
 .session-item.active {
   background: #eef3ff;
+  box-shadow: inset 2px 0 0 #2b6cf6;
 }
 
 .session-item.active .item-title {
@@ -189,7 +192,7 @@ function handleSelect(id: number) {
 }
 
 .item-title {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
   overflow: hidden;
@@ -201,12 +204,12 @@ function handleSelect(id: number) {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 11.5px;
+  font-size: 12px;
   color: #9099a7;
 }
 
 .item-meta .el-icon {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #b3bac5;
 }
 

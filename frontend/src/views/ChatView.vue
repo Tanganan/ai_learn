@@ -207,8 +207,9 @@ onMounted(async () => {
 <style scoped>
 .chat-layout {
   display: grid;
-  grid-template-columns: 272px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: 320px minmax(0, 820px);
+  justify-content: center;
+  gap: 18px;
   height: 100%;
   min-height: 0;
 }
@@ -216,7 +217,8 @@ onMounted(async () => {
 .main-column {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  width: 100%;
   min-height: 0;
   overflow: hidden;
 }
@@ -250,14 +252,14 @@ onMounted(async () => {
 
 .brand h1 {
   margin: 0;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .brand p {
-  margin: 3px 0 0;
-  font-size: 12.5px;
+  margin: 4px 0 0;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--ink-soft);
 }
@@ -279,10 +281,11 @@ onMounted(async () => {
   min-height: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .chat-layout {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 180px minmax(0, 1fr);
+    max-width: 100%;
   }
 
   .page-head {

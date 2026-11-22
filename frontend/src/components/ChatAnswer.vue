@@ -164,12 +164,12 @@ watch(
   align-items: center;
   gap: 6px;
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .title-icon {
-  font-size: 15px;
+  font-size: 16px;
   color: #5b6472;
 }
 
@@ -184,7 +184,7 @@ watch(
 }
 
 .head-hint {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-soft);
 }
 
@@ -192,7 +192,7 @@ watch(
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 26px 24px;
+  padding: 28px 26px;
   background:
     radial-gradient(120% 90% at 50% 0%, #fbfcff 0%, #ffffff 55%),
     #ffffff;
@@ -220,9 +220,9 @@ watch(
 .thread {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
   width: 100%;
-  max-width: 860px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -236,7 +236,7 @@ watch(
   align-self: flex-end;
   width: fit-content;
   max-width: min(660px, 78%);
-  padding: 11px 15px;
+  padding: 12px 16px;
   border: 1px solid #dbe6ff;
   border-radius: 12px 12px 4px 12px;
   background: #eff4ff;
@@ -244,7 +244,7 @@ watch(
 
 .msg.assistant {
   align-self: stretch;
-  padding: 18px 22px;
+  padding: 20px 24px;
   border: 1px solid #edf0f4;
   border-radius: 14px;
   background: #ffffff;
@@ -255,7 +255,7 @@ watch(
 
 .msg-content.plain {
   margin: 0;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.8;
   white-space: pre-wrap;
   word-break: break-word;
@@ -265,13 +265,13 @@ watch(
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 11.5px;
+  font-size: 12px;
   color: #9aa3b0;
   font-variant-numeric: tabular-nums;
 }
 
 .msg-time .el-icon {
-  font-size: 11.5px;
+  font-size: 12px;
 }
 
 .msg.user .msg-time {
@@ -284,7 +284,7 @@ watch(
   gap: 8px;
   padding: 16px 20px;
   color: #6b7482;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .error-box {
@@ -293,8 +293,8 @@ watch(
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  max-width: 860px;
-  margin: 18px auto 0;
+  max-width: 100%;
+  margin: 20px auto 0;
 }
 
 .error-box :deep(.el-alert) {
